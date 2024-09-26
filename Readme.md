@@ -1,0 +1,1 @@
+Simple extendable, with logging, business logic, metrics, transport and everything separated (decorator pattern) microservice for fetching price for crypto (BTC, ETH, etc...)
