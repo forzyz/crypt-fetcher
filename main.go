@@ -24,7 +24,7 @@ func main() {
 	flag.Parse()
 
 	svc := NewLoggingService(NewMetricService(&priceFetcher{}))
-
+		
 	server := NewJSONAPIServer(*listenAddr, svc)
 	server.Run() 
 }
