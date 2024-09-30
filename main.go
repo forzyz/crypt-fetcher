@@ -28,7 +28,8 @@ func main() {
 	go func() {		
 		for {
 			time.Sleep(3 * time.Second)
-			resp, err := grpcClient.FetchPrice(ctx, &proto.PriceRequest{Ticker: "BTC"})
+			// use whatever crypto ticker you want. Have fun with it!
+			resp, err := grpcClient.FetchPrice(ctx, &proto.PriceRequest{Ticker: "ETH"})
 			if err != nil {
 				log.Fatal(err)
 			}
