@@ -1,30 +1,44 @@
 package main
 
 import (
-	// "context"
+	"context"
 	"flag"
-	// "fmt"
-	// "log"
+	"fmt"
+	"log"
+	"time"
 
-	// "github.com/forzyz/crypt-fetcher/client"
+	"github.com/forzyz/crypt-fetcher/client"
+	"github.com/forzyz/crypt-fetcher/proto"
 )
 
 func main() {
-	// client test code (run this after running the service)
-	// client := client.New("http://localhost:3000")
-
-	// price, err := client.FetchPrice(context.Background(), "ET")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// fmt.Printf("%+v\n", price)
-	// return
-	listenAddr := flag.String("listenaddr", ":3000", "the address to listen on for HTTP requests")
+	var (
+		jsonAddr = flag.String("json", ":3000", "JSON API transport listen address")
+		grpcAddr = flag.String("grpc", ":4000", "GRPC API transport listen address")
+		svc      = NewLoggingService(NewMetricService(&priceFetcher{}))
+		ctx      = context.Background()
+	)
 	flag.Parse()
 
-	svc := NewLoggingService(NewMetricService(&priceFetcher{}))
-		
-	server := NewJSONAPIServer(*listenAddr, svc)
-	server.Run() 
+	grpcClient, err := client.NewGRPCClient(":4000")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	go func() {		
+		for {
+			time.Sleep(3 * time.Second)
+			resp, err := grpcClient.FetchPrice(ctx, &proto.PriceRequest{Ticker: "BTC"})
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			fmt.Printf("%+v\n", resp)
+		}
+	}()
+
+	go makeGRPCServerAndRun(*grpcAddr, svc)
+
+	jsonServer := NewJSONAPIServer(*jsonAddr, svc)
+	jsonServer.Run()
 }

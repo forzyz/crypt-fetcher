@@ -10,6 +10,13 @@ type PriceFetcher interface {
 	FetchPrice(context.Context, string) (float64, error)
 }
 
+type priceFetcherV2 struct{}
+
+func (s *priceFetcherV2) FetchPrice(ctx context.Context, ticker string) (float64, error) {
+	// other business logic
+	return MockPriceFetcher(ctx, ticker)
+}
+
 type priceFetcher struct{}
 
 func (s *priceFetcher) FetchPrice(ctx context.Context, ticker string) (float64, error) {
