@@ -33,3 +33,11 @@ PATH="${PATH}:${HOME}/go/bin"
 ```
 make run
 ```
+
+### Dockerfile run commands
+
+```
+docker build -t cryptfetcher .      
+docker run -p 3000:3000 cryptfetcher
+```
+
